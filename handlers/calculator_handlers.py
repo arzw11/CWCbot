@@ -7,9 +7,9 @@ from aiogram.utils.formatting import (TextLink,Italic,
 from keyboards.funcs_kb import order_kb,underframes_kb,bid_kb,depth
 from keyboards.menu_kb import exit_menu
 from funcs.calculator import calculation,check_number
-from funcs.data_func import get_data
+from funcs.data_func import CWCunderframePhoto
 from wordbook.text import (fill_form_text,choice_product,
-    link_text,underframe_price,incorrect_number,get_number)
+    link_text, underframe_price, incorrect_number, get_number)
 from config_reader import config
 
 router = Router()
@@ -45,13 +45,14 @@ async def cmd_fill_width(message: Message, state: FSMContext):
         await message.answer(fill_form_text['incorrect'])
 @router.callback_query(CalculatorFillForm.fill_depth, F.data.in_(['small_depth','big_depth']))
 async def cmd_fill_depth(clbck: CallbackQuery, state: FSMContext):
+    underframe_content = CWCunderframePhoto('underframe_images')
     if clbck.data == 'small_depth':
         await state.update_data(fill_depth=18)
         await state.set_state(CalculatorFillForm.fill_underframe)
         await clbck.bot.send_photo(
             chat_id= clbck.message.chat.id,
-            photo=get_data('underframe')[0][0],
-            caption=fill_form_text['underframe'],
+            photo= underframe_content.get_underframe_photo(),
+            caption =underframe_content.get_underframe_caption(),
             reply_markup=underframes_kb()
         )
     else:
@@ -59,8 +60,8 @@ async def cmd_fill_depth(clbck: CallbackQuery, state: FSMContext):
         await state.set_state(CalculatorFillForm.fill_underframe)
         await clbck.bot.send_photo(
             chat_id= clbck.message.chat.id,
-            photo=get_data('underframe')[0][0],
-            caption=fill_form_text['underframe'],
+            photo=underframe_content.get_underframe_photo(),
+            caption=underframe_content.get_underframe_caption(),
             reply_markup=underframes_kb()
         )
 @router.callback_query(CalculatorFillForm.fill_underframe,
@@ -117,7 +118,6 @@ async def cmd_fill_request(message:Message,state:FSMContext):
             'Отправить заявку нашему представителю?'
         ),
         sep='\n\n'
-
     )
     await message.answer(**content.as_kwargs(),reply_markup=bid_kb())
 @router.callback_query(CalculatorFillForm.fill_number,F.data == 'send')
