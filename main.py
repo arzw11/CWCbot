@@ -2,19 +2,37 @@ import asyncio
 import logging
 from aiogram import Bot, Dispatcher
 from aiogram.fsm.storage.memory import MemoryStorage
-from config_reader import config
-from handlers import user_handlers,pagination_handlers,calculator_handlers,help_hanlders
+
+from bot.db.orm import AsyncOrm
+from bot.db.engine import async_session
+from bot.handlers import admin_handlers, user_handlers, pagination_handlers, calculator_handlers, help_hanlders
+from bot.middleware.database import DataBaseSession
+from config.config_reader import config
 
 storage = MemoryStorage()
 logging.basicConfig(level=logging.INFO)
+
 bot = Bot(token=config.bot_token.get_secret_value())
+
+
+async def on_startup(bot):
+    await AsyncOrm.create_db()
 
 async def main():
     dp = Dispatcher(storage=storage)
-    dp.include_router(user_handlers.router)
-    dp.include_router(pagination_handlers.router)
-    dp.include_router(calculator_handlers.router)
-    dp.include_router(help_hanlders.router)
+    
+    dp.startup.register(on_startup)
+
+    dp.update.middleware(DataBaseSession(session_pool=async_session))
+
+    dp.include_routers(
+        admin_handlers.router,
+        user_handlers.router,
+        pagination_handlers.router,
+        calculator_handlers.router,
+        help_hanlders.router
+        )
+
     await bot.delete_webhook(drop_pending_updates=True)
     await dp.start_polling(bot)
 

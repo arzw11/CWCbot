@@ -5,6 +5,7 @@ class Settings(BaseSettings):
     bot_token: SecretStr
     owner: SecretStr
     cwc: SecretStr
-    model_config = SettingsConfigDict(env_file='token.env', env_file_encoding='utf-8')
+    db_lite: str
+    model_config = SettingsConfigDict(env_file='.env', env_file_encoding='utf-8')
 
 config = Settings()
