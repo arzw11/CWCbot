@@ -8,6 +8,7 @@
 # Технологии
 - [Python](https://www.python.org/)
 - [aiogram](https://aiogram.dev/)
+- [Pydantic](https://docs.pydantic.dev/latest/)
 - [SQLAlchemy](https://www.sqlalchemy.org/)
 - [aiosqlite](https://aiosqlite.omnilib.dev/en/stable/api.html)
 
