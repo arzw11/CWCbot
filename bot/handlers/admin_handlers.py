@@ -7,7 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from bot.db.orm import AsyncOrm
 from bot.FSM.states_data import AddProject, AddColors, ChangePriceMaterial, AddUnderframe, AddUtils
-from bot.keyboards.kb import KeyboardsBuilder
+from bot.keyboards.kb import KeyboardsBuilder, menu
 from bot.utils.admin import IsAdmin
 from bot.wordbook import text
 
@@ -29,6 +29,9 @@ admin_kb = KeyboardsBuilder(
 async def cmd_admin(message: Message, state: FSMContext):
     if IsAdmin().check_user(tg_id=message.from_user.id):
         await message.answer(**text.admin_text.as_kwargs(), reply_markup=admin_kb)
+        await state.clear()
+    else:
+        await message.answer(**text.start_text.as_kwargs(), reply_markup=menu)
         await state.clear()
 
 @router.callback_query(F.data == 'admin')
