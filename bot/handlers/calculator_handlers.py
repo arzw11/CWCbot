@@ -172,13 +172,13 @@ async def send_bid(message:Message,state:FSMContext, session: AsyncSession):
     if check_number(message.text) == True:
         await state.update_data(fill_number = message.text)
         data = await state.get_data()
-        if data['fill_underframe'] != '0':
-            result = await AsyncOrm.get_underframe(session=session, underframe_id=data['fill_underframe'])
-            underframe_name = result.name
-        else:
-            underframe_name = 'Без подстолья'
 
         if data['fill_product'] == 'стол':
+            if data['fill_underframe'] != '0':
+                result = await AsyncOrm.get_underframe(session=session, underframe_id=data['fill_underframe'])
+                underframe_name = result.name
+            else:
+                underframe_name = 'Без подстолья'
             price_pine, price_larch = await calculate_price(data=data, session=session)
             bid_content_table =as_list(
             as_marked_section(
@@ -200,8 +200,8 @@ async def send_bid(message:Message,state:FSMContext, session: AsyncSession):
                 ),
             sep='\n\n'
             )
-            await message.bot.send_message(chat_id=config.owner.get_secret_value(),**bid_content_table.as_kwargs())
-            await message.bot.send_message(chat_id=config.cwc.get_secret_value(), **bid_content_table.as_kwargs())
+            await message.bot.send_message(chat_id=config.owner,**bid_content_table.as_kwargs())
+            await message.bot.send_message(chat_id=config.cwc, **bid_content_table.as_kwargs())
             await message.answer(**link_text.as_kwargs(),
                                    reply_markup=exit_menu
                                    )
@@ -217,8 +217,8 @@ async def send_bid(message:Message,state:FSMContext, session: AsyncSession):
                 marker='🪵'
                 )
             )
-            await message.bot.send_message(chat_id=config.owner.get_secret_value(),**bid_content.as_kwargs())
-            await message.bot.send_message(chat_id=config.cwc.get_secret_value(), **bid_content.as_kwargs())
+            await message.bot.send_message(chat_id=config.owner,**bid_content.as_kwargs())
+            await message.bot.send_message(chat_id=config.cwc, **bid_content.as_kwargs())
             await message.answer(**link_text.as_kwargs(),
                                        reply_markup=exit_menu
                                        )
