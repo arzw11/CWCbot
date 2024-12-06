@@ -167,7 +167,11 @@ async def send_bid(message:Message,state:FSMContext, session: AsyncSession):
         await state.update_data(fill_number = message.text)
         data = await state.get_data()
 
-<<<<<<< HEAD
+        if data['fill_underframe'] != '0':
+            result = await AsyncOrm.get_underframe(session=session, underframe_id=data['fill_underframe'])
+            underframe_name = result.name
+        else:
+            underframe_name = 'Без подстолья'
         price_pine, price_larch = await calculate_price(data=data, session=session)
         bid_content_table =as_list(
         as_marked_section(
@@ -193,57 +197,6 @@ async def send_bid(message:Message,state:FSMContext, session: AsyncSession):
                                reply_markup=exit_menu
                                )
         await state.clear()
-=======
-        if data['fill_product'] == 'стол':
-            if data['fill_underframe'] != '0':
-                result = await AsyncOrm.get_underframe(session=session, underframe_id=data['fill_underframe'])
-                underframe_name = result.name
-            else:
-                underframe_name = 'Без подстолья'
-            price_pine, price_larch = await calculate_price(data=data, session=session)
-            bid_content_table =as_list(
-            as_marked_section(
-                TextLink(f"ОТКРЫТЬ ЧАТ", url=f"https://t.me/+{data['fill_number']}"),
-                f"Имя: {data['fill_name']}",
-                f"Номер телефона: +{data['fill_number']}",
-                f"Тип изделия: {data['fill_product']}",
-                f"Длина: {data['fill_length']}см",
-                f"Ширина: {data['fill_width']}см",
-                f"Толщина: {data['fill_depth']}мм",
-                f"Подстолье: {underframe_name}",
-                marker='🪵'
-                          ),
-            as_marked_section(
-                Italic('Примерная стоимость'),
-                f"Стол из сосны - {round(price_pine, 2)} ₽",
-                f"Стол из лиственницы - {round(price_larch, 2)} ₽",
-                marker='💵'
-                ),
-            sep='\n\n'
-            )
-            await message.bot.send_message(chat_id=config.owner,**bid_content_table.as_kwargs())
-            await message.bot.send_message(chat_id=config.cwc, **bid_content_table.as_kwargs())
-            await message.answer(**link_text.as_kwargs(),
-                                   reply_markup=exit_menu
-                                   )
-            await state.clear()
-        else:
-            bid_content = as_list(
-                as_marked_section(
-                TextLink('ОТКРЫТЬ ЧАТ', url=f"https://t.me/+{data['fill_number']}"),
-                f"Имя:{data['fill_name']}",
-                f"Номер телефона: +{data['fill_number']}",
-                f"Тип изделия: {data['fill_product']}",
-                f"Комментарий - {data['fill_request']}",
-                marker='🪵'
-                )
-            )
-            await message.bot.send_message(chat_id=config.owner,**bid_content.as_kwargs())
-            await message.bot.send_message(chat_id=config.cwc, **bid_content.as_kwargs())
-            await message.answer(**link_text.as_kwargs(),
-                                       reply_markup=exit_menu
-                                       )
-            await state.clear()
->>>>>>> 57f8029b15298888eb1acee5db4795b6ff004bb6
+       
     else:
         await message.answer(**incorrect_number.as_kwargs())
