@@ -6,7 +6,6 @@ class CalculatorFillForm(StatesGroup):
     fill_product = State()
     fill_length = State()
     fill_width = State()
-    fill_depth = State()
     fill_underframe = State()
     fill_request = State()
 

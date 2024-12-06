@@ -2,3 +2,5 @@
 venv
 .env
 .db
+logs.log
+cwc.db

@@ -27,13 +27,13 @@ admin_kb = KeyboardsBuilder(
 
 @router.message(Command('cwc'))
 async def cmd_admin(message: Message, state: FSMContext):
-    if IsAdmin().check_user(tg_id=message.from_user.id):
+    if IsAdmin.check_user(tg_id=message.from_user.id):
         await message.answer(**text.admin_text.as_kwargs(), reply_markup=admin_kb)
         await state.clear()
 
 @router.callback_query(F.data == 'admin')
 async def admin(clbck: CallbackQuery, state: FSMContext):
-    if IsAdmin().check_user(tg_id=clbck.from_user.id):
+    if IsAdmin.check_user(tg_id=clbck.from_user.id):
         await clbck.message.answer(**text.admin_text.as_kwargs(), reply_markup=admin_kb)
         await state.clear()
 

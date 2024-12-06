@@ -1,5 +1,6 @@
 import asyncio
 import logging
+
 from aiogram import Bot, Dispatcher
 from aiogram.fsm.storage.memory import MemoryStorage
 
@@ -7,10 +8,11 @@ from bot.db.orm import AsyncOrm
 from bot.db.engine import async_session
 from bot.handlers import admin_handlers, user_handlers, pagination_handlers, calculator_handlers, help_hanlders
 from bot.middleware.database import DataBaseSession
+
 from config.config_reader import config
 
 storage = MemoryStorage()
-logging.basicConfig(level=logging.INFO)
+
 
 bot = Bot(token=config.bot_token.get_secret_value())
 
@@ -19,6 +21,16 @@ async def on_startup(bot):
     await AsyncOrm.create_db()
 
 async def main():
+    logging.basicConfig(
+        level=logging.DEBUG,
+        format='%(asctime)s - %(levelname)s - %(message)s',
+        encoding="utf-8",
+        handlers=[
+            logging.FileHandler('logs.log', mode='a', encoding='utf-8'),
+            logging.StreamHandler()
+        ]
+    )
+
     dp = Dispatcher(storage=storage)
     
     dp.startup.register(on_startup)

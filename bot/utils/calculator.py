@@ -9,7 +9,6 @@ def check_number(phone:str):
 
 
 async def calculate_price(data: dict, session: AsyncSession):
-    depth = data['fill_depth']
     length = data['fill_length']
     width = data['fill_width']
     materials = await AsyncOrm.get_all_materials(session=session)
@@ -19,15 +18,9 @@ async def calculate_price(data: dict, session: AsyncSession):
     else:
         underframe = 0
 
-    if depth == 18:
-        price_pine = (length/100) * (width/100) * materials[0].price + underframe
-        price_larch = (length/100) * (width/100) * materials[2].price + underframe
 
-        return price_pine, price_larch
+    price_pine = (length/100) * (width/100) * materials[0].price + underframe
+    price_larch = (length/100) * (width/100) * materials[1].price + underframe
+
+    return price_pine, price_larch
     
-    if depth == 40:
-        price_pine = (length/100) * (width/100) * materials[1].price + underframe
-        price_larch = (length/100) * (width/100) * materials[3].price + underframe
-        
-        return price_pine, price_larch
-
